@@ -102,7 +102,6 @@ ipcMain.handle('addSupplyer', (event, args) => {
             }
             message = `Supplyer Added`
             resolve(message)
-            console.log(`A row has been inserted with rowid ${this.lastID}`)
           }
         )
       }
@@ -286,6 +285,103 @@ ipcMain.handle('searchCustomer', async (event, args) => {
   let sql = `SELECT * FROM customer WHERE customer_name LIKE ? OR customer_address LIKE ? OR customer_contact LIKE ?`
   return new Promise((resolve, reject) => {
     db.all(sql, [args, args, args], function (err, rows) {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(rows)
+      }
+    })
+  })
+})
+
+// add new category in database
+ipcMain.handle('addCategory', async (event, args) => {
+  const checking = `SELECT * FROM category WHERE category_name = ? LIMIT 1`
+  let message
+  return new Promise((resolve, reject) => {
+    db.get(checking, [args], (err, row) => {
+      if (err) {
+        reject(err)
+      }
+      if (row) {
+        message = 'Category already exists'
+        resolve(message)
+      } else {
+        const sql = `INSERT INTO category(category_name) VALUES (?)`
+        db.run(sql, [args], function (err) {
+          if (err) {
+            reject(err)
+          } else {
+            message = `Category Added`
+            resolve(message)
+          }
+        })
+      }
+    })
+  })
+})
+
+// Display Category data to the table
+ipcMain.handle('displayCategory', async (event, args) => {
+  let sql = `SELECT * FROM category`
+  return new Promise((resolve, reject) => {
+    db.all(sql, [], (error, row) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(row)
+      }
+    })
+  })
+})
+
+// Sending Category info to edit category page
+ipcMain.handle('editCategory', async (event, args) => {
+  let sql = `SELECT * FROM category WHERE cat_id = ?`
+  return new Promise((resolve, reject) => {
+    db.all(sql, [args], (err, row) => {
+      if (err) {
+        reject(err)
+      } else if (row) {
+        resolve(row)
+      }
+    })
+  })
+})
+
+// update category
+ipcMain.handle('updateCategory', async (event, args) => {
+  let sql = `UPDATE category SET category_name = ? WHERE cat_id = ?`
+  return new Promise((resolve, reject) => {
+    db.run(sql, [args.categoryName, args.cat_id], (err) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve('Category Updated')
+      }
+    })
+  })
+})
+
+// Delete Category
+ipcMain.handle('deleteCategory', async (event, args) => {
+  let sql = `DELETE FROM category WHERE cat_id=?`
+  return new Promise((resolve, reject) => {
+    db.run(sql, [args], (err) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(`Category Deleted`)
+      }
+    })
+  })
+})
+
+// Search Category
+ipcMain.handle('searchCategory', async (event, args) => {
+  let sql = `SELECT * FROM category WHERE category_name LIKE ?`
+  return new Promise((resolve, reject) => {
+    db.all(sql, [args], (err, rows) => {
       if (err) {
         reject(err)
       } else {

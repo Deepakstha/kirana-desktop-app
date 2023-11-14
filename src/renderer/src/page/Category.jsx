@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react'
-import ProductTable from '../components/Product/ProductTable'
+import React, { useEffect, useState } from 'react'
 import { AppBar, Box, Button, IconButton, Toolbar, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { Link } from 'react-router-dom'
 import TableSearch from '../components/Search/TableSearch'
+import CategoryTable from '../components/Category/CategoryTable'
 
-const Product = () => {
+const Category = () => {
   const [results, setResults] = useState([])
   const [searchValue, setSearchValue] = useState('')
   let result
   const deepak = async () => {
-    result = await window.electronic.invoke('displayProduct', 'Product Clicked')
+    result = await window.electronic.invoke('displayCategory', 'Category Clicked')
     setResults(result)
   }
   useEffect(() => {
@@ -18,7 +18,7 @@ const Product = () => {
   }, [result])
 
   const searchFunc = async () => {
-    result = await window.electronic.invoke('searchProduct', `%${searchValue}%`)
+    result = await window.electronic.invoke('searchCategory', `%${searchValue}%`)
     console.log(result)
     setResults(result)
   }
@@ -46,13 +46,13 @@ const Product = () => {
           </IconButton>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
             <Typography variant="h6" noWrap component="div">
-              Product
+              Category
             </Typography>
-            <Link to="/add-product">
+            <Link to="/add-category">
               <Button>
                 {' '}
                 <AddIcon />
-                Add New Product
+                Add New Category
               </Button>
             </Link>
           </Box>
@@ -60,9 +60,9 @@ const Product = () => {
       </AppBar>
       <Toolbar />
       <TableSearch setSearchValue={setSearchValue} searchValue={searchValue} />
-      <ProductTable />
+      <CategoryTable results={results} />
     </>
   )
 }
 
-export default Product
+export default Category

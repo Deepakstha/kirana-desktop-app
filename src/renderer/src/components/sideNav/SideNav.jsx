@@ -20,7 +20,10 @@ import {
   ProductionQuantityLimitsOutlined,
   StorefrontOutlined,
   PeopleOutlineOutlined,
-  ReceiptLongOutlined
+  ReceiptLongOutlined,
+  WidgetsOutlined,
+  MonetizationOnOutlined,
+  ShoppingBagOutlined
 } from '@mui/icons-material'
 
 import { Link, Outlet } from 'react-router-dom'
@@ -88,14 +91,40 @@ function SideNav(props) {
       </List>
       <Divider />
       <List>
-        {['Category', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem key={text} disablePadding>
+        <Link to="/category" style={{ color: 'black' }}>
+          <ListItem disablePadding>
             <ListItemButton>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemIcon>
+                <WidgetsOutlined />
+              </ListItemIcon>
+              <ListItemText primary="Category" />
             </ListItemButton>
           </ListItem>
-        ))}
+        </Link>
+
+        <Link to="/sales" style={{ color: 'black' }}>
+          <ListItem disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                <MonetizationOnOutlined />
+              </ListItemIcon>
+              <ListItemText primary="Sales" />
+            </ListItemButton>
+          </ListItem>
+        </Link>
+      </List>
+      <Divider />
+      <List>
+        <Link to="/fruits" style={{ color: 'black' }}>
+          <ListItem disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                <ShoppingBagOutlined />
+              </ListItemIcon>
+              <ListItemText primary="Fruits" />
+            </ListItemButton>
+          </ListItem>
+        </Link>
       </List>
     </div>
   )
