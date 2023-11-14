@@ -17,6 +17,7 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'
 import LastPageIcon from '@mui/icons-material/LastPage'
 import { Button, TableHead } from '@mui/material'
 import { Link } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 function TablePaginationActions(props) {
   const theme = useTheme()
@@ -95,9 +96,10 @@ export default function CustomerTable({ results }) {
     setPage(0)
   }
 
-  const handleDelete = async (sup_id, supplyer_name) => {
+  const handleDelete = async (cus_id, customer_name) => {
+    console.log('Clicked')
     Swal.fire({
-      text: `Are you sure to delete ${supplyer_name} Customer?`,
+      text: `Are you sure to delete ${customer_name} Customer?`,
       icon: 'warning',
       width: 350,
       showCancelButton: true,
@@ -106,16 +108,14 @@ export default function CustomerTable({ results }) {
     }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        let resultsData = await window.electronic.invoke('deleteCustomer', sup_id)
-        if (resultsData == 'Supplyer deleted') {
+        let resultsData = await window.electronic.invoke('deleteCustomer', cus_id)
+        if (resultsData == 'Customer deleted') {
           Swal.fire({ text: resultsData, icon: 'success', timer: 1500, width: 350 }).then(() => {
             window.location.reload()
           })
         }
       }
     })
-
-    console.log('delete', sup_id)
   }
 
   return (

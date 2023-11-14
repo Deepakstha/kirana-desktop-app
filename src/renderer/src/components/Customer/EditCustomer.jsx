@@ -38,7 +38,8 @@ const EditCustomer = () => {
     let customerInfo = {
       customerName,
       customerAddress,
-      customerContact
+      customerContact,
+      cus_id
     }
     let result = await window.electronic.invoke('updateCustomer', customerInfo)
 
@@ -72,7 +73,7 @@ const EditCustomer = () => {
               </Typography>
             </Link>
             <Typography variant="h6" noWrap component="div">
-              Add New Customer
+              Update Customer
             </Typography>
           </Box>
         </Toolbar>
@@ -80,15 +81,15 @@ const EditCustomer = () => {
       <Toolbar />
 
       <Box>
-        <Box>
+        <Box sx={{ mb: 2 }}>
           <Typography>Customer Name</Typography>
           <TextField value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
         </Box>
-        <Box>
+        <Box sx={{ mb: 2 }}>
           <Typography>Customer Address</Typography>
           <TextField value={customerAddress} onChange={(e) => setCustomerAddress(e.target.value)} />
         </Box>
-        <Box>
+        <Box sx={{ mb: 2 }}>
           <Typography>Customer Contact</Typography>
           <TextField value={customerContact} onChange={(e) => setCustomerContact(e.target.value)} />
         </Box>

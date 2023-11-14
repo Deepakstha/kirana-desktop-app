@@ -177,7 +177,6 @@ ipcMain.handle('deleteSupplyer', async (event, args) => {
 //Search Supplyer
 ipcMain.handle('searchSupplyer', async (event, args) => {
   let sql = `SELECT * FROM supplyers WHERE supplyer_name LIKE ? OR supplyer_address LIKE ? OR supplyer_contact LIKE ?`
-  console.log(args)
 
   return new Promise((resolve, reject) => {
     db.all(sql, [args, args, args], function (err, rows) {
@@ -265,5 +264,33 @@ ipcMain.handle('updateCustomer', async (event, args) => {
         }
       }
     )
+  })
+})
+
+// Delete Customer
+ipcMain.handle('deleteCustomer', async (event, args) => {
+  let sql = `DELETE FROM customer WHERE cus_id = ?`
+  return new Promise((resolve, reject) => {
+    db.run(sql, [args], function (err) {
+      if (err) {
+        reject(err)
+      } else {
+        resolve('Customer deleted')
+      }
+    })
+  })
+})
+
+// Searching Customr
+ipcMain.handle('searchCustomer', async (event, args) => {
+  let sql = `SELECT * FROM customer WHERE customer_name LIKE ? OR customer_address LIKE ? OR customer_contact LIKE ?`
+  return new Promise((resolve, reject) => {
+    db.all(sql, [args, args, args], function (err, rows) {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(rows)
+      }
+    })
   })
 })
