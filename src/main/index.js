@@ -390,3 +390,42 @@ ipcMain.handle('searchCategory', async (event, args) => {
     })
   })
 })
+
+// Add Product to the database
+ipcMain.handle('addProduct', (event, args) => {
+  const checking = `SELECT * FROM products WHERE product_name = ?`
+  let message
+
+  return new Promise((resolve, reject) => {
+    db.get(checking, [args.productName], (err, row) => {
+      if (err) {
+        reject(err)
+      }
+      if (row) {
+        message = 'Product already Exist'
+        resolve(message)
+      } else {
+        const sql = `INSERT INTO products(product_name,product_category,product_supplyer,product_quantity,product_price,supplyer_id) VALUES (?,?,?,?,?,?)`
+        db.run(
+          sql,
+          [
+            args.productName,
+            args.category,
+            args.supplyer.supplyer_name,
+            args.quantity,
+            args.price,
+            args.supplyer.sup_id
+          ],
+          (err) => {
+            if (err) {
+              reject(err)
+            } else {
+              message = 'Product Added'
+              resolve(message)
+            }
+          }
+        )
+      }
+    })
+  })
+})

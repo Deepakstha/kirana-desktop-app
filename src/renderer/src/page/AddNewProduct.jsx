@@ -1,6 +1,8 @@
 import {
   AppBar,
+  Autocomplete,
   Box,
+  Button,
   IconButton,
   InputLabel,
   MenuItem,
@@ -9,17 +11,76 @@ import {
   Toolbar,
   Typography
 } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace'
 import { Link } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 const AddNewProduct = () => {
+  const [productName, setProductName] = useState('')
   const [category, setCategory] = useState('')
   const [supplyer, setSupplyer] = useState('')
+  const [quantity, setQuantity] = useState('')
+  const [price, setPrice] = useState('')
 
-  //   const handleChangeCategory = (event) => {
-  //     setCategory(event.target.value)
-  //   }
+  const [allCategory, setAllCategory] = useState([])
+  const [allSupplyers, setAllSupplyers] = useState([])
+
+  const defprops = {
+    options: allCategory?.map((option) => option.category_name),
+    getOptionLabel: (options) => options
+  }
+
+  console.log(supplyer, 'SUPPL')
+  const supplyerProps = {
+    options: allSupplyers?.map((option) => ({
+      sup_id: option.sup_id,
+      supplyer_name: option.supplyer_name
+    })),
+    getOptionLabel: (options) => options.supplyer_name
+  }
+
+  const handleAllCategory = async () => {
+    let result = await window.electronic.invoke('displayCategory', 'Category Clicked')
+    setAllCategory(result)
+  }
+
+  const handleSupplyer = async () => {
+    let supplyers = await window.electronic.invoke('displaySupplyer', 'Suppliers')
+    setAllSupplyers(supplyers)
+  }
+
+  useEffect(() => {
+    handleAllCategory()
+    handleSupplyer()
+  }, [])
+
+  const handelSubmit = async () => {
+    let productInfo = {
+      productName,
+      category,
+      supplyer,
+      quantity,
+      price
+    }
+    let result = await window.electronic.invoke('addProduct', productInfo)
+
+    if (result == 'Product already Exist') {
+      Swal.fire({
+        text: 'This Product is already exist please go to edit page and Update the Quantity of the product',
+        icon: 'error',
+        timer: 1500,
+        width: 350
+      })
+    } else if (result == 'Product Added') {
+      Swal.fire({
+        text: 'Product Added',
+        icon: 'success',
+        timer: 1500,
+        width: 350
+      })
+    }
+  }
   return (
     <>
       <AppBar
@@ -54,52 +115,68 @@ const AddNewProduct = () => {
       {/* Adding Product form  */}
       <Box>
         {/* <Box sx={{ display: 'flex' }}> */}
-        <Box>
+        <Box sx={{ mb: 2 }}>
           <Typography>Product Name</Typography>
-          <TextField />
+          <TextField
+            value={productName}
+            onChange={(e) => setProductName(e.target.value)}
+            sx={{ width: 300 }}
+          />
         </Box>
-        <Box>
-          <InputLabel id="demo-simple-select-label">Product Category</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={category}
-            label="Product Category"
-            onChange={(event) => setCategory(event.target.value)}
-          >
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
-          </Select>
-        </Box>
-        {/* </Box> */}
+        <Box sx={{ mb: 2 }}>
+          <Typography>Product Category</Typography>
 
-        {/* <Box sx={{ display: 'flex' }}> */}
-        <Box>
-          <InputLabel id="demo-simple-select-label">Supplyer</InputLabel>
-          <Select
+          <Autocomplete
+            disablePortal
+            {...defprops}
+            sx={{ width: 300 }}
+            renderInput={(params) => <TextField {...params} />}
+            onChange={(event, newValue) => setCategory(newValue)}
+          />
+        </Box>
+
+        <Box sx={{ mb: 2 }}>
+          <Typography>Supplyer</Typography>
+          {/* <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             value={supplyer}
             label="Supplyer"
             onChange={(event) => setSupplyer(event.target.value)}
           >
-            <MenuItem value="Bharati">Bharati</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
-          </Select>
+            {allSupplyers?.map((e, i) => (
+              <MenuItem key={i} value={e.supplyer_name}>
+                {e.supplyer_name}
+              </MenuItem>
+            ))}
+          </Select> */}
+
+          <Autocomplete
+            disablePortal
+            {...supplyerProps}
+            sx={{ width: 300 }}
+            renderInput={(params) => <TextField {...params} />}
+            onChange={(event, newValue) => setSupplyer(newValue)}
+          />
         </Box>
 
-        <Box>
+        <Box sx={{ mb: 2 }}>
           <Typography>Quantity</Typography>
-          <TextField />
+          <TextField
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            sx={{ width: 300 }}
+          />
         </Box>
 
-        <Box>
+        <Box sx={{ mb: 2 }}>
           <Typography>Price</Typography>
-          <TextField />
+          <TextField value={price} onChange={(e) => setPrice(e.target.value)} sx={{ width: 300 }} />
         </Box>
         {/* </Box> */}
+        <Button variant="contained" onClick={handelSubmit}>
+          Add
+        </Button>
       </Box>
     </>
   )
