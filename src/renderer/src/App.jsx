@@ -15,6 +15,7 @@ import Category from './page/Category'
 import AddNewCategory from './page/AddNewCategory'
 import EditCategory from './components/Category/EditCategory'
 import Sales from './page/Sales'
+import EditProduct from './components/Product/EditProduct'
 
 function App() {
   // const ipcRenderer = window.electron.ipcRenderer
@@ -33,6 +34,7 @@ function App() {
           <Route path="/" element={<SideNav />}>
             <Route path="product" element={<Product />} />
             <Route path="add-product" element={<AddNewProduct />} />
+            <Route path="update-product/:prod_id" element={<EditProduct />} />
             <Route path="supplyer" element={<Supplyer />} />
             <Route path="add-supplyer" element={<AddNewSupplyer />} />
             <Route path="update-supplyer/:sup_id" element={<EditSupplyer />} />

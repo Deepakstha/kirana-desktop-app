@@ -19,6 +19,8 @@ const AddNewSupplyer = () => {
 
     if (result == 'Supplyer already exists') {
       Swal.fire({ text: result, icon: 'warning', timer: 1500, width: 350 })
+    } else if (result == 'Supplyer Added') {
+      Swal.fire({ text: 'Supplyer added successfully', icon: 'success', timer: 1500, width: 350 })
     }
   }
   return (

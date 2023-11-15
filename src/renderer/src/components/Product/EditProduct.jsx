@@ -13,15 +13,19 @@ import {
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import Swal from 'sweetalert2'
 
-const AddNewProduct = () => {
+const EditProduct = () => {
   const [productName, setProductName] = useState('')
   const [category, setCategory] = useState('')
   const [supplyer, setSupplyer] = useState('')
   const [quantity, setQuantity] = useState('')
   const [price, setPrice] = useState('')
+  const [supplyer_id, setSupplyerId] = useState('')
+  let { prod_id } = useParams()
+
+  console.log(supplyer, category, 'slfl')
 
   const [allCategory, setAllCategory] = useState([])
   const [allSupplyers, setAllSupplyers] = useState([])
@@ -39,6 +43,20 @@ const AddNewProduct = () => {
     getOptionLabel: (options) => options.supplyer_name
   }
 
+  let result
+  const deepak = async () => {
+    result = await window.electronic.invoke('editProduct', prod_id)
+    setProductName(result[0].product_name)
+    setCategory(result[0].product_category)
+    setSupplyer(result[0].product_supplyer)
+    setQuantity(result[0].product_quantity)
+    setPrice(result[0].product_price)
+    setSupplyerId(result[0].supplyer_id)
+  }
+  useEffect(() => {
+    deepak()
+  }, [result])
+
   const handleAllCategory = async () => {
     let result = await window.electronic.invoke('displayCategory', 'Category Clicked')
     setAllCategory(result)
@@ -54,27 +72,26 @@ const AddNewProduct = () => {
     handleSupplyer()
   }, [])
 
+  const handelSupplyerNull = () => {
+    setSupplyer('')
+    setSupplyerId('')
+  }
+
   const handelSubmit = async () => {
     let productInfo = {
       productName,
       category,
       supplyer,
       quantity,
-      price
+      price,
+      prod_id,
+      supplyer_id
     }
-    let result = await window.electronic.invoke('addProduct', productInfo)
-    console.log(result)
+    let result = await window.electronic.invoke('updateProduct', productInfo)
 
-    if (result == 'Product already Exist') {
+    if (result == 'Product Updated') {
       Swal.fire({
-        text: 'This Product is already exist please go to edit page and Update the Quantity of the product',
-        icon: 'error',
-        timer: 1500,
-        width: 350
-      })
-    } else if (result == 'Product Added') {
-      Swal.fire({
-        text: 'Product Added',
+        text: 'Product Updated',
         icon: 'success',
         timer: 1500,
         width: 350
@@ -106,7 +123,7 @@ const AddNewProduct = () => {
               </Typography>
             </Link>
             <Typography variant="h6" noWrap component="div">
-              Add New Product
+              Update Product
             </Typography>
           </Box>
         </Toolbar>
@@ -130,6 +147,7 @@ const AddNewProduct = () => {
             disablePortal
             {...defprops}
             sx={{ width: 300 }}
+            value={category}
             renderInput={(params) => <TextField {...params} />}
             onChange={(event, newValue) => setCategory(newValue)}
           />
@@ -138,13 +156,21 @@ const AddNewProduct = () => {
         <Box sx={{ mb: 2 }}>
           <Typography>Supplyer</Typography>
 
-          <Autocomplete
-            disablePortal
-            {...supplyerProps}
-            sx={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} />}
-            onChange={(event, newValue) => setSupplyer(newValue)}
-          />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Autocomplete
+              disablePortal
+              {...supplyerProps}
+              sx={{ width: 300 }}
+              value={{ sup_id: supplyer_id, supplyer_name: supplyer }}
+              renderInput={(params) => <TextField {...params} />}
+              onChange={(event, newValue) => {
+                setSupplyer(newValue.supplyer_name)
+                setSupplyerId(newValue.sup_id)
+              }}
+            />{' '}
+            <Button onClick={handelSupplyerNull}>set null</Button>
+            {/* <Typography>{supplyer && supplyer?.supplyer_name}</Typography> */}
+          </Box>
         </Box>
 
         <Box sx={{ mb: 2 }}>
@@ -162,11 +188,11 @@ const AddNewProduct = () => {
         </Box>
         {/* </Box> */}
         <Button variant="contained" onClick={handelSubmit}>
-          Add
+          Update
         </Button>
       </Box>
     </>
   )
 }
 
-export default AddNewProduct
+export default EditProduct

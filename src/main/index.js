@@ -395,6 +395,7 @@ ipcMain.handle('searchCategory', async (event, args) => {
 ipcMain.handle('addProduct', (event, args) => {
   const checking = `SELECT * FROM products WHERE product_name = ?`
   let message
+  console.log(args)
 
   return new Promise((resolve, reject) => {
     db.get(checking, [args.productName], (err, row) => {
@@ -411,14 +412,14 @@ ipcMain.handle('addProduct', (event, args) => {
           [
             args.productName,
             args.category,
-            args.supplyer.supplyer_name,
+            args.supplyer.supplyer_name || '',
             args.quantity,
             args.price,
-            args.supplyer.sup_id
+            args.supplyer.sup_id || ''
           ],
           (err) => {
             if (err) {
-              reject(err)
+              resolve(err)
             } else {
               message = 'Product Added'
               resolve(message)
@@ -427,5 +428,107 @@ ipcMain.handle('addProduct', (event, args) => {
         )
       }
     })
+  })
+})
+
+//Display product in table
+ipcMain.handle('displayProduct', async (event, args) => {
+  let sql = `SELECT * FROM products`
+  return new Promise((resolve, reject) => {
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(rows)
+      }
+    })
+  })
+})
+
+// Delete product
+ipcMain.handle('deleteProduct', async (event, args) => {
+  let sql = `DELETE FROM products WHERE prod_id = ?`
+  return new Promise((resolve, reject) => {
+    db.run(sql, [args], (err) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve('Product Deleted Successfully')
+      }
+    })
+  })
+})
+
+// Sending product info to edit product page
+ipcMain.handle('editProduct', async (event, args) => {
+  let sql = 'SELECT * FROM products where prod_id=?'
+  return new Promise((resolve, reject) => {
+    db.all(sql, [args], (err, row) => {
+      if (err) {
+        reject(err)
+      } else if (row) {
+        resolve(row)
+      }
+    })
+  })
+})
+
+// Update product
+ipcMain.handle('updateProduct', async (event, args) => {
+  let sql = `UPDATE products SET product_name=?, product_category=?, product_supplyer=?, product_quantity=?, product_price=?, supplyer_id = ? WHERE prod_id = ?`
+  return new Promise((resolve, reject) => {
+    db.run(
+      sql,
+      [
+        args.productName,
+        args.category,
+        args.supplyer,
+        args.quantity,
+        args.price,
+        args.supplyer_id,
+        args.prod_id
+      ],
+      (err) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve('Product Updated')
+        }
+      }
+    )
+  })
+})
+
+//Search Product
+ipcMain.handle('searchProduct', async (event, args) => {
+  let sql = `SELECT * FROM products WHERE product_name LIKE ? OR product_category LIKE ? OR product_supplyer LIKE ? `
+  return new Promise((resolve, reject) => {
+    db.all(sql, [args], (err, rows) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(rows)
+      }
+    })
+  })
+})
+
+// Search product by price
+ipcMain.handle('searchProductPrice', async (event, args) => {
+  let sqlGreater = `SELECT * FROM products WHERE product_price >= ?`
+  let sqlLess = `SELECT * FROM products WHERE product_price <= ?`
+  return new Promise((resolve, reject) => {
+    let hh = db.all(
+      args.gtrLessValue == '>' ? sqlGreater : sqlLess,
+      [args.searchPriceValue],
+      (err, rows) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(rows)
+          console.log(rows)
+        }
+      }
+    )
   })
 })
