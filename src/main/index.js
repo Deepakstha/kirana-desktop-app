@@ -532,3 +532,172 @@ ipcMain.handle('searchProductPrice', async (event, args) => {
     )
   })
 })
+
+// Search Product by quantity
+ipcMain.handle('searchProductQuantity', async (event, args) => {
+  let sqlGreater = `SELECT * FROM products WHERE product_quantity >= ?`
+  let sqlLess = `SELECT * FROM products WHERE product_quantity <= ?`
+  let sqlEqual = `SELECT * FROM products WHERE product_quantity = ?`
+  return new Promise((resolve, reject) => {
+    db.all(
+      args.gtrLessValue == '>' ? sqlGreater : args.gtrLessValue == '=' ? sqlEqual : sqlLess,
+      [args.searchQuantityValue],
+      (err, rows) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(rows)
+        }
+      }
+    )
+  })
+})
+
+// add invoice to the database
+/*
+ipcMain.handle('addInvoice', async (event, args) => {
+  const checking = `SELECT * FROM customer WHERE customer_name=? AND customer_contact = ?`
+  return new Promise((resolve, reject) => {
+    db.get(checking, [args.customerName, args.customerContact], function (err, row) {
+      if (err) {
+        reject(err)
+      } else {
+        if (!row) {
+          const sql = `INSERT INTO customer(customer_name, customer_address, customer_contact) VALUES (?,?,?)`
+          db.run(
+            sql,
+            [args.customerName, args.customerAddress, args.customerContact],
+            function (err) {
+              if (err) {
+                reject(err)
+              }
+            }
+          )
+        }
+        const invoiceSql = `INSERT INTO invoice (customer_name, customer_address, customer_contact) VALUES (?,?,?)`
+        db.run(
+          invoiceSql,
+          [args.customerName, args.customerAddress, args.customerContact],
+          function (err, rown) {
+            if (err) {
+              reject(err)
+            } else {
+              resolve(rown)
+            }
+          }
+        )
+      }
+    })
+  })
+})
+
+*/
+
+ipcMain.handle('addInvoice', async (event, args) => {
+  try {
+    const checking = `SELECT * FROM customer WHERE customer_name=? AND customer_contact = ?`
+
+    const row = await new Promise((resolve, reject) => {
+      db.get(checking, [args.customerName, args.customerContact], (err, row) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(row)
+        }
+      })
+    })
+
+    if (!row) {
+      const insertCustomerSql = `INSERT INTO customer(customer_name, customer_address, customer_contact) VALUES (?,?,?)`
+
+      await new Promise((resolve, reject) => {
+        db.run(
+          insertCustomerSql,
+          [args.customerName, args.customerAddress, args.customerContact],
+          function (err) {
+            if (err) {
+              reject(err)
+            } else {
+              resolve()
+            }
+          }
+        )
+      })
+    }
+
+    const insertInvoiceSql = `INSERT INTO invoice (customer_name, customer_address, customer_contact) VALUES (?,?,?)`
+
+    const result = await new Promise((resolve, reject) => {
+      db.run(
+        insertInvoiceSql,
+        [args.customerName, args.customerAddress, args.customerContact],
+        function (err, rown) {
+          if (err) {
+            reject(err)
+          } else {
+            resolve({ id: this.lastID })
+          }
+        }
+      )
+    })
+
+    return result
+  } catch (error) {
+    throw error
+  }
+})
+
+// display invoice info
+ipcMain.handle('displayInvoiceDetails', async (event, args) => {
+  let sql = `SELECT * FROM invoice WHERE invoice_id=?`
+  return new Promise((resolve, reject) => {
+    db.get(sql, [args], function (err, rows) {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(rows)
+      }
+    })
+  })
+})
+
+//display product in invoice sell page
+ipcMain.handle('searchProductByName', async (event, args) => {
+  let sql = `SELECT * FROM products WHERE product_name LIKE ?`
+  return new Promise((resolve, reject) => {
+    db.all(sql, [args], (err, rows) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(rows)
+      }
+    })
+  })
+})
+
+// add sells
+ipcMain.handle('addSales', async (event, args) => {
+  let sql = `INSERT INTO sales (product_quantity,product_id,invoice_id) VALUES (?,?,?)`
+  return new Promise((resolve, reject) => {
+    db.run(sql, [args.productQuantity, args.productId, args.invoice_id], function (err) {
+      if (err) {
+        reject(err)
+      }
+      resolve('Product Added to sales')
+    })
+  })
+})
+
+// display invoice
+ipcMain.handle('displayInvoice', async (event, args) => {
+  let sql = `SELECT invoice.invoice_id, products.product_name, sales.product_quantity,products.product_price, sales.product_quantity * products.product_price AS total_product_price FROM invoice JOIN sales ON invoice.invoice_id= sales.invoice_id JOIN products ON sales.product_id = products.prod_id WHERE invoice.invoice_id=?`
+  return new Promise((resolve, reject) => {
+    db.all(sql, [args], (err, rows) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(rows)
+      }
+    })
+  })
+})

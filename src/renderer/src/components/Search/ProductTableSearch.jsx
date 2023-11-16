@@ -73,7 +73,7 @@ export default function ProductTableSearch({
           component="div"
           sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
         >
-          <Button onClick={() => window.location.reload()}>ALL</Button>
+          <Button onClick={() => window.location.reload()}>Refresh</Button>
         </Typography>
 
         <Box sx={{ gap: 5, display: 'flex' }}>
@@ -87,8 +87,9 @@ export default function ProductTableSearch({
               sx={{ height: 40 }}
               variant="filled"
             >
-              <MenuItem value="greater">greater</MenuItem>
-              <MenuItem value="less">less</MenuItem>
+              <MenuItem value="greater">Greater</MenuItem>
+              <MenuItem value="less">Less</MenuItem>
+              <MenuItem value="equal">Equal</MenuItem>
             </Select>
             <TextField
               value={searchQuantityValue}

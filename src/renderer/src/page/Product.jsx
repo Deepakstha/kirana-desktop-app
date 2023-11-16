@@ -55,6 +55,31 @@ const Product = () => {
       deepak()
     }
   }, [searchPriceValue, priceGreterLessValue])
+
+  const searchQuantityFunc = async () => {
+    let gtrLessValue
+    if (quantityGraterLessValue === 'greater') {
+      gtrLessValue = `>`
+    } else if (quantityGraterLessValue === 'equal') {
+      gtrLessValue = `=`
+    } else {
+      gtrLessValue = `<`
+    }
+
+    let searchQuantityInfo = {
+      gtrLessValue,
+      searchQuantityValue
+    }
+    result = await window.electronic.invoke('searchProductQuantity', searchQuantityInfo)
+    setResults(result)
+  }
+  useEffect(() => {
+    if (quantityGraterLessValue && searchQuantityValue?.length > 0) {
+      searchQuantityFunc()
+    } else {
+      deepak()
+    }
+  }, [searchQuantityValue, quantityGraterLessValue])
   return (
     <>
       <AppBar

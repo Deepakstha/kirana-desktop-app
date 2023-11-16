@@ -16,6 +16,8 @@ import AddNewCategory from './page/AddNewCategory'
 import EditCategory from './components/Category/EditCategory'
 import Sales from './page/Sales'
 import EditProduct from './components/Product/EditProduct'
+import AddNewInvoice from './page/AddNewInvoice'
+import AddSales from './page/AddSales'
 
 function App() {
   // const ipcRenderer = window.electron.ipcRenderer
@@ -42,10 +44,12 @@ function App() {
             <Route path="add-customer" element={<AddNewCustomer />} />
             <Route path="update-customer/:cus_id" element={<EditCustomer />} />
             <Route path="invoice" element={<Invoice />} />
+            <Route path="add-invoice" element={<AddNewInvoice />} />
             <Route path="category" element={<Category />} />
             <Route path="add-category" element={<AddNewCategory />} />
             <Route path="update-category/:cat_id" element={<EditCategory />} />
             <Route path="sales" element={<Sales />} />
+            <Route path="add-sales/:invoice_id" element={<AddSales />} />
           </Route>
         </Routes>
       </BrowserRouter>

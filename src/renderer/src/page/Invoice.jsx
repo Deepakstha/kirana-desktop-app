@@ -23,7 +23,7 @@ const Invoice = () => {
             <Typography variant="h6" noWrap component="div">
               Invoice
             </Typography>
-            <Link to="/add-customer">
+            <Link to="/add-invoice">
               <Button>
                 {' '}
                 <AddIcon />
