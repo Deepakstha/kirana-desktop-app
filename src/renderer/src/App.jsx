@@ -34,6 +34,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<SideNav />}>
+            <Route index path="" element={<Sales />} />
             <Route path="product" element={<Product />} />
             <Route path="add-product" element={<AddNewProduct />} />
             <Route path="update-product/:prod_id" element={<EditProduct />} />

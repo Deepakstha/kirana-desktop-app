@@ -1,9 +1,33 @@
 import { AppBar, Box, Button, IconButton, Toolbar, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { Link } from 'react-router-dom'
-import InvoicerTable from '../components/Invoice/InvoiceTable'
+import InvoiceTable from '../components/Invoice/InvoiceTable'
+import { useEffect, useState } from 'react'
+import TableSearch from '../components/Search/TableSearch'
 
 const Invoice = () => {
+  const [results, setResults] = useState([])
+  const [searchInvoiceId, setSearchInvoiceId] = useState('')
+  let result
+  const deepak = async () => {
+    result = await window.electronic.invoke('displayAllInvoice', 'displayInvoice')
+    setResults(result)
+  }
+  useEffect(() => {
+    deepak()
+  }, [result])
+
+  const searchFunc = async () => {
+    result = await window.electronic.invoke('searchInvoice', `%${searchInvoiceId}%`)
+    setResults(result)
+  }
+  useEffect(() => {
+    if (searchInvoiceId?.length > 0) {
+      searchFunc()
+    } else {
+      deepak()
+    }
+  }, [searchInvoiceId])
   return (
     <>
       <AppBar
@@ -34,7 +58,12 @@ const Invoice = () => {
         </Toolbar>
       </AppBar>
       <Toolbar />
-      <InvoicerTable />
+      <TableSearch
+        setSearchValue={setSearchInvoiceId}
+        searchValue={searchInvoiceId}
+        placeholder="Invoice Id"
+      />
+      <InvoiceTable results={results} />
     </>
   )
 }

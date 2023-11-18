@@ -77,22 +77,34 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired
 }
 
-export default function SalesInvoiceTable({
-  results,
-  displayNoneOnPrint,
-  setSearchProductValue,
-  setProductId
-}) {
+export default function SalesInvoiceTable({ results, displayNoneOnPrint }) {
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(15)
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - results?.length) : 0
 
-  const handleSelect = async (prod_id, product_name) => {
-    console.log(prod_id, product_name)
-    setSearchProductValue(product_name)
-    setProductId(prod_id)
+  const handleRemove = async (sales_id, product_name) => {
+    console.log(sales_id, product_name)
+    Swal.fire({
+      text: `Are you sure to remove ${product_name} product from invoice ?`,
+      icon: 'warning',
+      width: 350,
+      showCancelButton: true,
+      confirmButtonText: 'Remove',
+      confirmButtonColor: '#FF0000'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        let removeSales = await window.electronic.invoke('removeInvoiceSale', sales_id)
+        if (removeSales == 'sales removed') {
+          Swal.fire({ text: 'Sales Removed', icon: 'success', timer: 1500, width: 350 }).then(
+            () => {
+              window.location.reload()
+            }
+          )
+        }
+      }
+    })
   }
   const sum = results.reduce((total, current) => total + current?.total_product_price, 0)
 
@@ -102,26 +114,21 @@ export default function SalesInvoiceTable({
         <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
           <TableHead sx={{ backgroundColor: '#D9EDF6' }}>
             <TableRow>
-              <TableCell sx={{ color: '#316B8A', fontWeight: 'bold', fontSize: 15 }}>
-                S.N.
-              </TableCell>
-              <TableCell sx={{ color: '#316B8A', fontWeight: 'bold', fontSize: 15 }} align="right">
+              <TableCell sx={{ fontWeight: 'bold', fontSize: 15 }}>S.N.</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', fontSize: 15 }} align="right">
                 Product Name
               </TableCell>
-              <TableCell sx={{ color: '#316B8A', fontWeight: 'bold', fontSize: 15 }} align="right">
+              <TableCell sx={{ fontWeight: 'bold', fontSize: 15 }} align="right">
                 Product Quantity
               </TableCell>
-              <TableCell sx={{ color: '#316B8A', fontWeight: 'bold', fontSize: 15 }} align="right">
+              <TableCell sx={{ fontWeight: 'bold', fontSize: 15 }} align="right">
                 Price
               </TableCell>
-              <TableCell sx={{ color: '#316B8A', fontWeight: 'bold', fontSize: 15 }} align="right">
+              <TableCell sx={{ fontWeight: 'bold', fontSize: 15 }} align="right">
                 Total Price
               </TableCell>
               {!displayNoneOnPrint ? (
-                <TableCell
-                  sx={{ color: '#316B8A', fontWeight: 'bold', fontSize: 15 }}
-                  align="right"
-                >
+                <TableCell sx={{ fontWeight: 'bold', fontSize: 15 }} align="right">
                   Remove
                 </TableCell>
               ) : null}
@@ -150,7 +157,7 @@ export default function SalesInvoiceTable({
                           color: 'red'
                         }
                       }}
-                      onClick={() => handleSelect(row.prod_id, row.product_name)}
+                      onClick={() => handleRemove(row.sales_id, row.product_name)}
                     />
                   </TableCell>
                 ) : null}

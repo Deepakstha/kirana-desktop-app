@@ -690,7 +690,7 @@ ipcMain.handle('addSales', async (event, args) => {
 
 // display invoice
 ipcMain.handle('displayInvoice', async (event, args) => {
-  let sql = `SELECT invoice.invoice_id, products.product_name, sales.product_quantity,products.product_price, sales.product_quantity * products.product_price AS total_product_price FROM invoice JOIN sales ON invoice.invoice_id= sales.invoice_id JOIN products ON sales.product_id = products.prod_id WHERE invoice.invoice_id=?`
+  let sql = `SELECT sales.sales_id, invoice.invoice_id, products.product_name, sales.product_quantity,products.product_price, sales.product_quantity * products.product_price AS total_product_price FROM invoice JOIN sales ON invoice.invoice_id= sales.invoice_id JOIN products ON sales.product_id = products.prod_id WHERE invoice.invoice_id=?`
   return new Promise((resolve, reject) => {
     db.all(sql, [args], (err, rows) => {
       if (err) {
@@ -700,4 +700,79 @@ ipcMain.handle('displayInvoice', async (event, args) => {
       }
     })
   })
+})
+
+//Remove invoice sales
+ipcMain.handle('removeInvoiceSale', async (event, args) => {
+  let sql = `DELETE FROM sales WHERE sales_id=?`
+  return new Promise((resolve, reject) => {
+    db.run(sql, [args], (err) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve('sales removed')
+      }
+    })
+  })
+})
+
+// Search invoice
+ipcMain.handle('searchInvoice', async (event, args) => {
+  let sql = `SELECT sales.sales_id, invoice.invoice_id, invoice.customer_name,invoice.customer_address,invoice.customer_contact, products.product_name, sales.product_quantity,products.product_price, sales.product_quantity * products.product_price AS total_product_price FROM invoice JOIN sales ON invoice.invoice_id= sales.invoice_id JOIN products ON sales.product_id = products.prod_id WHERE invoice.invoice_id LIKE ? `
+  return new Promise((resolve, reject) => {
+    db.all(sql, [args], (err, rows) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(rows)
+      }
+    })
+  })
+})
+
+// display all invoice in table
+ipcMain.handle('displayAllInvoice', async (event, args) => {
+  let sql = `SELECT sales.sales_id, invoice.invoice_id, invoice.customer_name,invoice.customer_address,invoice.customer_contact, products.product_name, sales.product_quantity,products.product_price, sales.product_quantity * products.product_price AS total_product_price FROM invoice JOIN sales ON invoice.invoice_id= sales.invoice_id JOIN products ON sales.product_id = products.prod_id `
+  return new Promise((resolve, reject) => {
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(rows)
+      }
+    })
+  })
+})
+
+// Total sales of the month in graph
+ipcMain.handle('totalSalesOfMonths', async (event, args) => {
+  let sql = `SELECT
+  STRFTIME('%Y-%m', invoice.invoice_date) AS sale_month,
+  SUM(sales.product_quantity * products.product_price) AS total_sales
+ FROM
+  invoice JOIN sales ON invoice.invoice_id= sales.invoice_id JOIN products ON sales.product_id = products.prod_id
+ GROUP BY
+  STRFTIME('%Y-%m', invoice.invoice_date)`
+  return new Promise((resolve, reject) => {
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(rows)
+      }
+    })
+  })
+})
+
+// highest sold product in graph
+ipcMain.handle('highestSoldProduct', async (event, args) => {
+  let sql = `SELECT
+  STRFTIME('%Y-%m', invoice.invoice_date) AS sale_month,
+  SUM(sales.product_quantity) AS total_sold,
+  products.product_category
+ FROM
+  invoice JOIN sales ON invoice.invoice_id= sales.invoice_id JOIN products ON sales.product_id = products.prod_id 
+ GROUP BY
+  STRFTIME('%Y-%m', invoice.invoice_date),
+  products.product_category ORDER BY total_sold DESC`
 })

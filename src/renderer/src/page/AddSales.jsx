@@ -1,4 +1,4 @@
-import { Box, Button, Divider, TextField, Typography } from '@mui/material'
+import { Box, Button, Card, CardContent, Divider, TextField, Typography } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import InvoiceProductTable from '../components/Invoice/InvoiceProductTable'
@@ -105,19 +105,29 @@ const AddSales = () => {
         />
       ) : null}
 
-      <Divider />
-      <Box ref={componentRef}>
-        <Typography sx={{ textAlign: 'center' }}>Invoice</Typography>
-        <Typography>Invoice ID: {customerInfo?.invoice_id}</Typography>
-        <Typography>Customer Name: {customerInfo?.customer_name}</Typography>
-        <Typography>Customer Address: {customerInfo?.customer_address}</Typography>
-        <Typography>Customer Contact: {customerInfo?.customer_contact}</Typography>
+      <Card sx={{ mt: 3 }}>
+        <Box sx={{ padding: 10 }} ref={componentRef}>
+          <Typography sx={{ textAlign: 'center' }}>Invoice</Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box>
+              <Typography>Customer Name: {customerInfo?.customer_name}</Typography>
+              <Typography>Customer Address: {customerInfo?.customer_address}</Typography>
+              <Typography>Customer Contact: {customerInfo?.customer_contact}</Typography>
+            </Box>
+            <Box>
+              <Typography>Invoice ID: {customerInfo?.invoice_id}</Typography>
+              <Typography>Date: {customerInfo?.invoice_date?.split(' ')[0]}</Typography>
+            </Box>
+          </Box>
 
-        {invoiceProduct && invoiceProduct?.length > 0 ? (
-          <SalesInvoiceTable displayNoneOnPrint={displayNoneOnPrint} results={invoiceProduct} />
-        ) : null}
-      </Box>
-      <Button onClick={handlePrintContent}>print</Button>
+          {invoiceProduct && invoiceProduct?.length > 0 ? (
+            <SalesInvoiceTable displayNoneOnPrint={displayNoneOnPrint} results={invoiceProduct} />
+          ) : null}
+        </Box>
+        <Button sx={{ ml: 10 }} onClick={handlePrintContent}>
+          print
+        </Button>
+      </Card>
     </>
   )
 }

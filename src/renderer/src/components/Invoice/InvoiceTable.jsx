@@ -15,6 +15,9 @@ import FirstPageIcon from '@mui/icons-material/FirstPage'
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft'
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'
 import LastPageIcon from '@mui/icons-material/LastPage'
+import { Button, TableHead } from '@mui/material'
+import { Link } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 function TablePaginationActions(props) {
   const theme = useTheme()
@@ -73,32 +76,13 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired
 }
 
-function createData(name, calories, fat) {
-  return { name, calories, fat }
-}
-
-const rows = [
-  createData('Cupcake', 305, 3.7),
-  createData('Donut', 452, 25.0),
-  createData('Eclair', 262, 16.0),
-  createData('Frozen yoghurt', 159, 6.0),
-  createData('Gingerbread', 356, 16.0),
-  createData('Honeycomb', 408, 3.2),
-  createData('Ice cream sandwich', 237, 9.0),
-  createData('Jelly Bean', 375, 0.0),
-  createData('KitKat', 518, 26.0),
-  createData('Lollipop', 392, 0.2),
-  createData('Marshmallow', 318, 0),
-  createData('Nougat', 360, 19.0),
-  createData('Oreo', 437, 18.0)
-].sort((a, b) => (a.calories < b.calories ? -1 : 1))
-
-export default function InvoicerTable() {
+export default function InvoiceTable({ results }) {
   const [page, setPage] = React.useState(0)
-  const [rowsPerPage, setRowsPerPage] = React.useState(5)
+  const [rowsPerPage, setRowsPerPage] = React.useState(15)
+  console.log(results, 'INVOICE TABLES')
 
   // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - results?.length) : 0
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -112,21 +96,48 @@ export default function InvoicerTable() {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+        <TableHead sx={{ backgroundColor: '#D9EDF6' }}>
+          <TableRow>
+            <TableCell sx={{ fontWeight: 'bold', fontSize: 15 }}>Invoice ID</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', fontSize: 15 }} align="right">
+              Customer Name
+            </TableCell>
+            <TableCell sx={{ fontWeight: 'bold', fontSize: 15 }} align="right">
+              Address
+            </TableCell>
+            <TableCell sx={{ fontWeight: 'bold', fontSize: 15 }} align="right">
+              Contact
+            </TableCell>
+            <TableCell sx={{ fontWeight: 'bold', fontSize: 15 }} align="right">
+              Product Name
+            </TableCell>
+            <TableCell sx={{ fontWeight: 'bold', fontSize: 15 }} align="right">
+              Product Quantity
+            </TableCell>
+            <TableCell sx={{ fontWeight: 'bold', fontSize: 15 }} align="right">
+              Price
+            </TableCell>
+            <TableCell sx={{ fontWeight: 'bold', fontSize: 15 }} align="right">
+              Total Price
+            </TableCell>
+          </TableRow>
+        </TableHead>
+
         <TableBody>
           {(rowsPerPage > 0
-            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : rows
-          ).map((row) => (
-            <TableRow key={row.name}>
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.calories}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.fat}
-              </TableCell>
+            ? results?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : results
+          ).map((row, index) => (
+            <TableRow key={index}>
+              <TableCell>{row.invoice_id}</TableCell>
+              <TableCell align="right">{row.customer_name || '-'}</TableCell>
+              <TableCell align="right">{row.customer_address || '-'}</TableCell>
+              <TableCell align="right">{row.customer_contact || '-'}</TableCell>
+              <TableCell align="right">{row.product_name || '-'}</TableCell>
+              <TableCell align="right">{row.product_quantity || '-'}</TableCell>
+
+              <TableCell align="right">{row.product_price || '-'}</TableCell>
+              <TableCell align="right">{row.total_product_price || '-'}</TableCell>
             </TableRow>
           ))}
           {emptyRows > 0 && (
@@ -138,9 +149,9 @@ export default function InvoicerTable() {
         <TableFooter>
           <TableRow>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+              rowsPerPageOptions={[15, 25, 35, { label: 'All', value: -1 }]}
               colSpan={3}
-              count={rows.length}
+              count={results?.length}
               rowsPerPage={rowsPerPage}
               page={page}
               SelectProps={{

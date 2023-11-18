@@ -52,7 +52,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   }
 }))
 
-export default function TableSearch({ setSearchValue, searchValue }) {
+export default function TableSearch({ setSearchValue, searchValue, placeholder }) {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Toolbar>
@@ -71,7 +71,7 @@ export default function TableSearch({ setSearchValue, searchValue }) {
           <StyledInputBase
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="Search…"
+            placeholder={placeholder ? placeholder : 'Search…'}
             inputProps={{ 'aria-label': 'search' }}
           />
         </Search>
