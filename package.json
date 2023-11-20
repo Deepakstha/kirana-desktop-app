@@ -25,6 +25,7 @@
     "@mui/material": "^5.14.17",
     "react-router-dom": "^6.18.0",
     "react-to-print": "^2.14.15",
+    "recharts": "^2.9.3",
     "sequelize": "^6.35.0",
     "sqlite3": "^5.1.6",
     "sweetalert2": "^11.9.1"

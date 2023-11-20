@@ -14,12 +14,11 @@ const AddSales = () => {
   const [productQuantity, setProductQuantity] = useState('')
   const [customerInfo, setCustomerInfo] = useState(null)
   const [invoiceProduct, setInvoiceProduct] = useState([])
+  const [selectedProductQuantity, setSelectedProductQuantity] = useState()
 
-  console.log(searchProductValue, 'searchproductVlaue')
   const invoiceDetails = async () => {
     let data = await window.electronic.invoke('displayInvoiceDetails', invoice_id)
     setCustomerInfo(data)
-    console.log(data, 'MY DATA')
   }
   useEffect(() => {
     invoiceDetails()
@@ -43,16 +42,29 @@ const AddSales = () => {
       productId,
       invoice_id
     }
-    let result = await window.electronic.invoke('addSales', salesInfo)
-    if (result == 'Product Added to sales') {
+
+    if (productQuantity == '') {
+      return await Swal.fire({ text: 'Please insert Quantity', icon: 'error', width: 350 })
+    }
+
+    if (productQuantity > selectedProductQuantity) {
       Swal.fire({
-        text: `Added Products to the invoice`,
-        icon: 'success',
-        timer: 1500,
-        width: 350
-      }).then(() => {
-        window.location.reload()
+        text: 'You can not add more than available quantity',
+        width: 350,
+        icon: 'error'
       })
+    } else {
+      let result = await window.electronic.invoke('addSales', salesInfo)
+      if (result == 'Product Added to sales') {
+        Swal.fire({
+          text: `Added Products to the invoice`,
+          icon: 'success',
+          timer: 1500,
+          width: 350
+        }).then(() => {
+          window.location.reload()
+        })
+      }
     }
   }
 
@@ -78,14 +90,14 @@ const AddSales = () => {
   return (
     <>
       <Box>
-        <Box>
+        <Box sx={{ mb: 2 }}>
           <Typography variant="h6">Product Name</Typography>
           <TextField
             value={searchProductValue}
             onChange={(e) => setSearchProductValue(e.target.value)}
           />
         </Box>
-        <Box>
+        <Box sx={{ mb: 2 }}>
           <Typography variant="h6">Quantity</Typography>
           <TextField
             type="number"
@@ -93,7 +105,7 @@ const AddSales = () => {
             onChange={(e) => setProductQuantity(e.target.value)}
           />
         </Box>
-        <Button variant="contained" onClick={handelSubmit}>
+        <Button variant="contained" onClick={handelSubmit} sx={{ mb: 2 }}>
           Add
         </Button>
       </Box>
@@ -102,6 +114,7 @@ const AddSales = () => {
           setSearchProductValue={setSearchProductValue}
           setProductId={setProductId}
           results={forProductTable}
+          setSelectedProductQuantity={setSelectedProductQuantity}
         />
       ) : null}
 

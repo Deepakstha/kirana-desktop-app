@@ -85,7 +85,6 @@ export default function SalesInvoiceTable({ results, displayNoneOnPrint }) {
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - results?.length) : 0
 
   const handleRemove = async (sales_id, product_name) => {
-    console.log(sales_id, product_name)
     Swal.fire({
       text: `Are you sure to remove ${product_name} product from invoice ?`,
       icon: 'warning',

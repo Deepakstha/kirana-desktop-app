@@ -30,6 +30,13 @@ const EditSupplyer = () => {
       supplyerContact,
       sup_id
     }
+    if (supplyerName == '') {
+      return await Swal.fire({ text: 'Supplyer Name is Empty', width: 350, icon: 'error' })
+    } else if (supplyerAddress == '') {
+      return await Swal.fire({ text: 'Supplyer Address is Empty', width: 350, icon: 'error' })
+    } else if (supplyerContact == '') {
+      return await Swal.fire({ text: 'Supplyer Contact is Empty', width: 350, icon: 'error' })
+    }
     let result = await window.electronic.invoke('updateSupplyer', supplyerInfo)
     console.log(result)
 

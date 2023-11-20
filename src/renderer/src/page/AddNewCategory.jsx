@@ -19,6 +19,9 @@ const AddNewCategory = () => {
   const [categoryName, setCategoryName] = useState('')
 
   const handelSubmit = async () => {
+    if (categoryName == '') {
+      return await Swal.fire({ text: 'Please fill the text field', width: 350, icon: 'error' })
+    }
     let result = await window.electronic.invoke('addCategory', categoryName)
 
     if (result == 'Category already exists') {
@@ -67,7 +70,7 @@ const AddNewCategory = () => {
         </Box>
 
         <Button variant="contained" onClick={handelSubmit}>
-          Add
+          Add Category
         </Button>
       </Box>
     </>

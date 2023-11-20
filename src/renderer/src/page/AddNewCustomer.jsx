@@ -26,6 +26,9 @@ const AddNewCustomer = () => {
       customerAddress,
       customerContact
     }
+    if (customerName == '') {
+      return await Swal.fire({ text: 'Customer name is Empty', icon: 'error', width: 350 })
+    }
     let result = await window.electronic.invoke('addCustomer', customerInfo)
 
     if (result == 'Customer already exists') {
@@ -68,20 +71,20 @@ const AddNewCustomer = () => {
       <Toolbar />
 
       <Box>
-        <Box>
+        <Box sx={{ mb: 2 }}>
           <Typography>Customer Name</Typography>
           <TextField value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
         </Box>
-        <Box>
+        <Box sx={{ mb: 2 }}>
           <Typography>Customer Address</Typography>
           <TextField value={customerAddress} onChange={(e) => setCustomerAddress(e.target.value)} />
         </Box>
-        <Box>
+        <Box sx={{ mb: 2 }}>
           <Typography>Customer Contact</Typography>
           <TextField value={customerContact} onChange={(e) => setCustomerContact(e.target.value)} />
         </Box>
         <Button variant="contained" onClick={() => handelSubmit('123')}>
-          Add
+          Add Customer
         </Button>
       </Box>
     </>

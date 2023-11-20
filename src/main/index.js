@@ -683,7 +683,14 @@ ipcMain.handle('addSales', async (event, args) => {
       if (err) {
         reject(err)
       }
-      resolve('Product Added to sales')
+      let updateSql = `UPDATE products SET product_quantity =( product_quantity - ?) WHERE prod_id = ?`
+      db.run(updateSql, [args.productQuantity, args.productId], (err) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve('Product Added to sales')
+        }
+      })
     })
   })
 })
@@ -706,11 +713,33 @@ ipcMain.handle('displayInvoice', async (event, args) => {
 ipcMain.handle('removeInvoiceSale', async (event, args) => {
   let sql = `DELETE FROM sales WHERE sales_id=?`
   return new Promise((resolve, reject) => {
-    db.run(sql, [args], (err) => {
+    db.get(`SELECT product_quantity,product_id FROM sales WHERE sales_id=?`, [args], (err, row) => {
       if (err) {
         reject(err)
-      } else {
-        resolve('sales removed')
+        return
+      }
+      if (row) {
+        let quantity = row.product_quantity
+
+        if (quantity) {
+          db.run(
+            `UPDATE products SET product_quantity = ( product_quantity + ?) WHERE  prod_id = ?`,
+            [quantity, row.product_id],
+            (err) => {
+              if (err) {
+                reject(err)
+              }
+            }
+          )
+        }
+
+        db.run(sql, [args], (err) => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve('sales removed')
+          }
+        })
       }
     })
   })
@@ -769,10 +798,19 @@ ipcMain.handle('highestSoldProduct', async (event, args) => {
   let sql = `SELECT
   STRFTIME('%Y-%m', invoice.invoice_date) AS sale_month,
   SUM(sales.product_quantity) AS total_sold,
-  products.product_category
+  products.product_category AS product_category
  FROM
   invoice JOIN sales ON invoice.invoice_id= sales.invoice_id JOIN products ON sales.product_id = products.prod_id 
  GROUP BY
   STRFTIME('%Y-%m', invoice.invoice_date),
   products.product_category ORDER BY total_sold DESC`
+  return new Promise((resolve, reject) => {
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(rows)
+      }
+    })
+  })
 })

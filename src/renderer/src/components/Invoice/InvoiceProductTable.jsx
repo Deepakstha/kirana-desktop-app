@@ -76,17 +76,23 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired
 }
 
-export default function InvoiceProductTable({ results, setSearchProductValue, setProductId }) {
+export default function InvoiceProductTable({
+  results,
+  setSearchProductValue,
+  setProductId,
+  setSelectedProductQuantity
+}) {
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(15)
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - results?.length) : 0
 
-  const handleSelect = async (prod_id, product_name) => {
+  const handleSelect = async (prod_id, product_name, product_quantity) => {
     console.log(prod_id, product_name)
     setSearchProductValue(product_name)
     setProductId(prod_id)
+    setSelectedProductQuantity(product_quantity)
   }
 
   return (
@@ -127,19 +133,15 @@ export default function InvoiceProductTable({ results, setSearchProductValue, se
               <TableCell align="right">{row.product_category || '-'}</TableCell>
               <TableCell align="right">
                 {' '}
-                {row.product_supplyer ? (
-                  <Link to={`/update-supplyer/${row.supplyer_id}`}>
-                    {row.product_supplyer || '-'}{' '}
-                  </Link>
-                ) : (
-                  '-'
-                )}
+                {row.product_supplyer ? row.product_supplyer || '-' : '-'}
               </TableCell>
               <TableCell align="right">{row.product_quantity || '-'}</TableCell>
               <TableCell align="right">{row.product_price || '-'}</TableCell>
               <TableCell align="right">
                 {' '}
-                <Button onClick={() => handleSelect(row.prod_id, row.product_name)}>
+                <Button
+                  onClick={() => handleSelect(row.prod_id, row.product_name, row.product_quantity)}
+                >
                   select
                 </Button>{' '}
               </TableCell>

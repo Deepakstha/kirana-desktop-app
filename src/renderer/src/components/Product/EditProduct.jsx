@@ -176,6 +176,7 @@ const EditProduct = () => {
         <Box sx={{ mb: 2 }}>
           <Typography>Quantity</Typography>
           <TextField
+            type="number"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             sx={{ width: 300 }}
@@ -184,7 +185,12 @@ const EditProduct = () => {
 
         <Box sx={{ mb: 2 }}>
           <Typography>Price</Typography>
-          <TextField value={price} onChange={(e) => setPrice(e.target.value)} sx={{ width: 300 }} />
+          <TextField
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            sx={{ width: 300 }}
+          />
         </Box>
         {/* </Box> */}
         <Button variant="contained" onClick={handelSubmit}>

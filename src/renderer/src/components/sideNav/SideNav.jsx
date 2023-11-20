@@ -114,7 +114,7 @@ function SideNav(props) {
         </Link>
       </List>
       <Divider />
-      <List>
+      {/* <List>
         <Link to="/fruits" style={{ color: 'black' }}>
           <ListItem disablePadding>
             <ListItemButton>
@@ -125,7 +125,7 @@ function SideNav(props) {
             </ListItemButton>
           </ListItem>
         </Link>
-      </List>
+      </List> */}
     </div>
   )
 

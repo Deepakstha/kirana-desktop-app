@@ -25,6 +25,9 @@ const AddNewInvoice = () => {
       customerAddress,
       customerContact
     }
+    if (customerName == '') {
+      return await Swal.fire({ text: 'Customer name is Empty', icon: 'error', width: 350 })
+    }
     let result = await window.electronic.invoke('addInvoice', customerInfo)
 
     if (result) {

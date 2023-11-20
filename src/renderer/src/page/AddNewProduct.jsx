@@ -62,8 +62,12 @@ const AddNewProduct = () => {
       quantity,
       price
     }
+    if (productName == '') {
+      return await Swal.fire({ text: 'Product name cannot be empty', width: 350, icon: 'error' })
+    } else if (price == '') {
+      return await Swal.fire({ text: 'Please insert Price', width: 350, icon: 'error' })
+    }
     let result = await window.electronic.invoke('addProduct', productInfo)
-    console.log(result)
 
     if (result == 'Product already Exist') {
       Swal.fire({
@@ -150,6 +154,7 @@ const AddNewProduct = () => {
         <Box sx={{ mb: 2 }}>
           <Typography>Quantity</Typography>
           <TextField
+            type="number"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             sx={{ width: 300 }}
@@ -158,11 +163,16 @@ const AddNewProduct = () => {
 
         <Box sx={{ mb: 2 }}>
           <Typography>Price</Typography>
-          <TextField value={price} onChange={(e) => setPrice(e.target.value)} sx={{ width: 300 }} />
+          <TextField
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            sx={{ width: 300 }}
+          />
         </Box>
         {/* </Box> */}
         <Button variant="contained" onClick={handelSubmit}>
-          Add
+          Add Product
         </Button>
       </Box>
     </>
